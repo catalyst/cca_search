@@ -1,0 +1,57 @@
+<?php
+
+/**
+ * @file
+ * Contains cca_search.module.
+ *
+ * This module restricts visibility on unpublished search results to
+ * accounts with 'access administration pages' permission.
+ */
+
+use Drupal\search_api\IndexInterface;
+use Drupal\search_api\Query\QueryInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function cca_search_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.cca_search':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Custom search behaviour including restricting unpublished results.') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Override solr query to restrict unpublished content to privileged users only.
+ *
+ * This requires node status field to be indexed in Solr as 'status'.
+ *
+ * @todo: hook_search_api_solr_converted_query_alter() is undocumented
+ *  in web/modules/contrib/search_api/search_api.api.php
+ *
+ * Implements hook_search_api_solr_converted_query_alter().
+ */
+function cca_search_search_api_solr_converted_query_alter(
+  &$solarium_query,
+  QueryInterface $query
+) {
+  // Get the current user.
+  $user = \Drupal::currentUser();
+
+  $can_view_unpublished = $user->hasPermission('access administration pages');
+
+  if (!$can_view_unpublished) {
+    // Inject solr query filter requiring indexed published status be true.
+    // Node published status field is indexed as status, term as status_1.
+    $solarium_query->createFilterQuery([
+      'key' => 'published_only',
+      'query' => 'bs_status:true OR bs_status_1:true',
+    ]);
+  }
+}
