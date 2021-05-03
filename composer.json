@@ -1,0 +1,10 @@
+{
+    "name": "islandora/cca_search",
+    "type": "drupal-module",
+    "description": "Catalyst Community Archive Search",
+    "homepage": "https://github.com/catalyst/cca_search",
+    "license": "GPL-2.0+",
+    "require": {
+        "drupal/search_api_solr": "^4.1"
+    }
+}
