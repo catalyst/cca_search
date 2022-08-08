@@ -54,11 +54,15 @@ class MemberOfCollection extends ProcessorPluginBase {
             $parent_node = $node_storage->load($parent['target_id']);
             // Is parent a Collection?
             if (is_object($parent_node)) {
-              $model_tid = $parent_node->get('field_model')
-                ->first()
-                ->getValue()['target_id'];
-              $model_term = $taxonomy_term_storage->load($model_tid);
-              if (is_object($model_term)) {
+              $model_value = $parent_node->get('field_model')                   
+                ->first();                                                      
+              if (isset($model_value)) {                                        
+                $model_tid = $model_value->getValue()['target_id'];             
+              }                                                                 
+              if (isset($model_tid)) {                                          
+                $model_term = $taxonomy_term_storage->load($model_tid);         
+              }
+              if (isset($model_term) && is_object($model_term)) {  
                 $model_term_uri = $model_term->get('field_external_uri')->first()->getUrl()->getUri();
                 if ($model_term_uri == 'http://purl.org/dc/dcmitype/Collection') {
                   $collections[] = $parent_node->id();

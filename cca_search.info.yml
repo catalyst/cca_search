@@ -2,7 +2,7 @@ name: 'CCA Search'
 type: module
 description: 'Custom search behaviour including restricting unpublished results'
 core_version_requirement: ^8 || ^9
-version: '8.x-1.0-alpha4'
+version: '8.x-1.0-alpha5'
 package: 'CCA'
 dependencies:
   - search_api_solr
